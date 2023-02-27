@@ -7,6 +7,6 @@ lib
 .env1
 CodeT5Model/model_weights.pth
 CodeT5Model/pytorch_model.bin
-VanillaModel/assets/*
-VanillaModel/variables/*
+VanillaModel/assets/
+VanillaModel/variables/
 VanillaModel/saved_model.pb
