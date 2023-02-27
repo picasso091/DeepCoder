@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin&family=EB+Garamond&display=swap"
+      rel="stylesheet"
+    />
+    <title>DeepCoder-Home</title>
+  </head>
+  <body>
+    <header>
+      <h1>
+        A Transformer-based Deep Coding Engine for Generating High Level Source
+        Code
+      </h1>
+      <div class="navCont">
+        <a href="{% url 'home' %}"> Problem Statement </a>
+        <a href="{% url 'home' %}"> Pseudocode </a>
+      </div>
+    </header>
+
+    <!-- <p>
+    {% load static %}
+    <img style="width: 200px; height: 247px;", src = "{% static 'images/Picture1.png' %}">
+</p> -->
+    <form method="POST" action="{% url 'result' %}">
+      {% csrf_token %}
+      <textarea
+        id="description"
+        name="description"
+        required
+        placeholder="Type a problem"
+      ></textarea>
+      <button>Generate Code</button>
+    </form>
+  </body>
+</html>

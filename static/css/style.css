@@ -1,0 +1,51 @@
+body{
+  background-color: rgb(242, 230, 255);
+}
+header{
+  background-color: rgb(221, 221, 187);
+  display: block;
+  margin: 20px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 5px;
+  float: center;
+  font-size: 15px;
+  font-family: "EB Garamond", serif;
+  color: rgb(51, 17, 0);
+  text-align: center;
+}
+.navCont a {
+  display: inline-block;
+  background-color: #d69c2f7a;
+  border-radius: 20px;
+  font-size: 20px;
+  margin: 50px;
+  margin-right: 200px;
+  padding: 10px;
+  color: gray;
+  text-decoration: none;
+}
+.navCont a:hover{
+    color: black;
+}
+/* img{
+  margin-top: -20px;
+  margin-left: 1300px;
+  display: inline-block;
+} */
+input {
+    width: 800px;
+    height: 100px;
+    margin-top: 80px;
+    margin-left: 300px;
+}
+button{
+  height: 50px;
+  width: 150px;
+  margin-left: 610px;
+  margin-top: 10px;
+  background-color:rgb(173, 173, 133);
+  color: white;
+  font-family: "EB Garamond", serif;
+  font-size: 20px ;
+}
