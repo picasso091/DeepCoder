@@ -12,7 +12,13 @@
       href="https://fonts.googleapis.com/css2?family=Cabin&family=EB+Garamond&display=swap"
       rel="stylesheet"
     />
-    <title>DeepCoder-Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <title>DeepCoder | Home</title>
   </head>
   <body>
     <header>
@@ -20,25 +26,29 @@
         A Transformer-based Deep Coding Engine for Generating High Level Source
         Code
       </h1>
-      <div class="navCont">
-        <a href="{% url 'home' %}"> Problem Statement </a>
-        <a href="{% url 'home' %}"> Pseudocode </a>
-      </div>
     </header>
 
-    <!-- <p>
-    {% load static %}
-    <img style="width: 200px; height: 247px;", src = "{% static 'images/Picture1.png' %}">
-</p> -->
     <form method="POST" action="{% url 'result' %}">
       {% csrf_token %}
       <textarea
-        id="description"
+        id="description1"
         name="description"
         required
-        placeholder="Type a problem"
+        placeholder="Enter a pseudocode of a problem"
       ></textarea>
-      <button>Generate Code</button>
+      <div class="item-wrapper" style="    width: 100%;
+      display: flex;
+      justify-content: center;">
+        <button>Generate C++ Code</button>
+        <!-- <button>CodeT5 Model</button> -->
+      </div>
+      <!-- <div
+        class="btn-group-home"
+        style="display: flex; justify-content: center"
+      >
+        <button>Vanilla Model</button>
+        <button>CodeT5 Model</button>
+      </div> -->
     </form>
   </body>
 </html>

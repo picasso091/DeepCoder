@@ -23,43 +23,47 @@ def result(request):
     if request.method == "POST":
         pseudocode = request.POST.get('description')
         print('---------------------',pseudocode)
-        # model = tf.saved_model.load('/home/rakshya/Documents/MajorProjectFrontend/PseudocodeModel/')
         # tokenizer([pseudocode])
         model = CodeT5()
-        print(tokenizer([pseudocode]))
+        # print(tokenizer([pseudocode]))
         torch.save(model.state_dict(), '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth' )
         # input_tensor = torch.tensor(description)
-        model.load_state_dict(torch.load('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth'))
+        # model.load_state_dict(torch.load('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth'))
         # print(model.eval())
         input_ids = tokenizer(pseudocode , return_tensors='pt').input_ids
         attention_mask = tokenizer(pseudocode , return_tensors='pt').attention_mask
-        model1 = T5ForConditionalGeneration.from_pretrained('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/')
-        outputs = model1.generate(input_ids,max_length=500)
-        predicted = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        print("Generated output: ", predicted )
+        model_t5 = T5ForConditionalGeneration.from_pretrained('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/')
+        # print(model1.eval())
+        output_t5 = model_t5.generate(input_ids,max_length=500)
+        predicted_t5 = tokenizer.decode(output_t5[0], skip_special_tokens=True)
+        # print("Generated output: ", predicted )
 
-        # output_tensor = model(input_ids,attention_mask)
-        # print(output_tensor)
-        # output_data = {'output_data': output_tensor.tolist()}
-
+        model_vanilla = tf.saved_model.load('/home/rakshya/Documents/MajorProjectFrontend/eModel/')
+        output_vanilla = model_vanilla(pseudocode).numpy()
+        predicted_vanilla=output_vanilla.decode('utf-8')
+        print('--------------- ',type(predicted_vanilla))
 
 
         
         
-        # predicted_output = model(description).numpy()
+        if (';' in predicted_vanilla):
+            predicted_vanilla = predicted_vanilla.replace(';', ';\n') 
+        elif (')' in predicted_vanilla):
+            predicted_vanilla = predicted_vanilla.replace(')', ')\n')
+        elif ('{' in predicted_vanilla):
+            predicted_vanilla = predicted_vanilla.replace('{', '{\n')
+        elif ('}' in predicted_vanilla):
+            predicted_vanilla = predicted_vanilla.replace('}', '}\n')
+        else:
+        
 
-        # output=predicted_output.decode('utf-8')
-        # print('--------------- ',output_data)
-        # output1 = predicted_output.replace(';', ';\n') 
-        # output1 = output1.replace('{', '{\n')
-        # output1 = output1.replace(')', ')\n')
         # c=time.perf_counter()
-        # print('Predicted Output: ',output)
+            print('Predicted Output: ',predicted_vanilla)
         # print(result)
         # print('time to load model:  ',round(b-a)," sec")
         # print( 'time to generate & display output:  ', round(c-b)," sec\n")
         # return JsonResponse({'ques':description,'result': output})
-        return render(request, 'result.html', {'ques':pseudocode,'result': predicted})
+        return render(request, 'result.html', {'ques':pseudocode,'result_t5': predicted_t5, 'result_vanilla':predicted_vanilla})
     # return JsonResponse({})
 
 

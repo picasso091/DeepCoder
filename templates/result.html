@@ -12,7 +12,13 @@
       href="https://fonts.googleapis.com/css2?family=Cabin&family=EB+Garamond&display=swap"
       rel="stylesheet"
     />
-    <title>DeepCoder-Result</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <title>DeepCoder | Result</title>
   </head>
   <body>
     <header>
@@ -20,37 +26,38 @@
         A Transformer-based Deep Coding Engine for Generating High Level Source
         Code
       </h1>
-      <div class="navCont">
-        <a href="{% url 'home' %}"> Problem Statement </a>
-        <a href="{% url 'home' %}"> Pseudocode </a>
-      </div>
     </header>
-    <!-- <p>
-    {% load static %}
-    <img style="width: 200px; height: 247px;", src = "{% static 'images/Picture1.png' %}">
-</p> -->
-    <div>
-      <form method="POST">
-        <p style="text-align: center">Pseudocode: {{ques}}</p>
-        <br />
-        <textarea
-          id="result1"
-          name="result1"
-          required
-          placeholder="this is your required corresponding code"
-        >
-{{result}}</textarea
-        >
-      </form>
-    </div>
-    <!-- <div data-pym-src=
-"https://www.jdoodle.com/embed/v0/5lkE">
-    </div>
 
-    <script src=
-"https://www.jdoodle.com/assets/jdoodle-pym.min.js"
-        type="text/javascript">
-    </script> -->
-    <!-- <script src="//onlinegdb.com/embed/js/j3vh540ozo?theme=dark"></script> -->
+    <form method="POST">
+      {% csrf_token %}
+      <div class="wrapper">
+        <div class="item-wrapper">
+          <label>Pseudocode Input</label>
+          <textarea rows="10">{{ques}}</textarea>
+          <a href="{% url 'home' %}">Enter Pseudocode</a>
+        </div>
+
+        <div class="item-wrapper">
+          <label>Vanilla Transformer Model Results</label>
+          <textarea id="textarea" rows="10">{{result_vanilla}}</textarea>
+          <button onclick="copy()">Copy Code</button>
+        </div>
+
+        <div class="item-wrapper">
+          <label>CodeT5 Model Results</label>
+          <textarea id="textarea" rows="10">{{result_t5}}</textarea>
+          <button onclick="copy()">Copy Code</button>
+        </div>
+
+      </div>
+    
+      <script>
+        function copy() {
+          let textarea = document.getElementById("textarea");
+          textarea.select();
+          document.execCommand("copy");
+        }
+      </script>
+    </form>
   </body>
 </html>
