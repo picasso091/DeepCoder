@@ -28,27 +28,28 @@
       </h1>
     </header>
 
-    <form method="POST" action="{% url 'result' %}">
-      {% csrf_token %}
+    <form method="POST" action="{% url 'app_name:result' %}">
       <textarea
         id="description1"
         name="description"
         required
         placeholder="Enter a pseudocode of a problem"
       ></textarea>
-      <div class="item-wrapper" style="    width: 100%;
-      display: flex;
-      justify-content: center;">
-        <button>Generate C++ Code</button>
-        <!-- <button>CodeT5 Model</button> -->
+      <div
+        class="item-wrapper1"
+        style="width: 100%; display: flex; justify-content: center"
+      >
+        {% csrf_token %}
+        <input type="submit" name="vanilla" value="Vanilla Model" />
+        <input type="submit" name="codet5" value="CodeT5 Model" />
       </div>
-      <!-- <div
+    </form>
+    <!-- <div
         class="btn-group-home"
         style="display: flex; justify-content: center"
       >
         <button>Vanilla Model</button>
         <button>CodeT5 Model</button>
       </div> -->
-    </form>
   </body>
 </html>

@@ -8,87 +8,109 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from model.codet5model import CodeT5
 import torch
-from transformers import RobertaTokenizer,T5ForConditionalGeneration
-ques='add 1 and 2'
-output1 = '#include <iostream>\nusing namespace std; \n int main(){ \n cout<<1+2; \n return 0;\n}'
-tokenizer = RobertaTokenizer.from_pretrained('Salesforce/codet5-small')
+from transformers import RobertaTokenizer, T5ForConditionalGeneration
+ques = '''print hello world'''
+output_t5 = '#include <iostream> \n using namespace std; \n int main(){ \n cout<<"hello world"<<endl; \n}'
+output_vanilla = '#include <iostream> \n using namespace std; \n int main(){ \n cout<<"karen"<<endl; \n return 0; \n}'
+
 
 def home(request):
     return render(request, 'home.html')
 
 def result(request):
-
-
     # print('--------------', tf.__version__)
-    if request.method == "POST":
-        pseudocode = request.POST.get('description')
-        print('---------------------',pseudocode)
-        # tokenizer([pseudocode])
-        model = CodeT5()
-        # print(tokenizer([pseudocode]))
-        torch.save(model.state_dict(), '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth' )
-        # input_tensor = torch.tensor(description)
-        # model.load_state_dict(torch.load('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth'))
-        # print(model.eval())
-        input_ids = tokenizer(pseudocode , return_tensors='pt').input_ids
-        attention_mask = tokenizer(pseudocode , return_tensors='pt').attention_mask
-        model_t5 = T5ForConditionalGeneration.from_pretrained('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/')
-        # print(model1.eval())
-        output_t5 = model_t5.generate(input_ids,max_length=500)
-        predicted_t5 = tokenizer.decode(output_t5[0], skip_special_tokens=True)
-        # print("Generated output: ", predicted )
+        if 'vanilla' in request.POST:
+            try:
+                text = request.POST.get('description')
+                print('text-vanilla  ', text)
+                a = time.perf_counter()       
+                model_vanilla = tf.saved_model.load(
+                    '/home/rakshya/Documents/MajorProjectFrontend/VanillaModel/')
 
-        model_vanilla = tf.saved_model.load('/home/rakshya/Documents/MajorProjectFrontend/eModel/')
-        output_vanilla = model_vanilla(pseudocode).numpy()
-        predicted_vanilla=output_vanilla.decode('utf-8')
-        print('--------------- ',type(predicted_vanilla))
+                output_vanilla = model_vanilla(text).numpy()
+                predicted_vanilla = output_vanilla.decode('utf-8')
+
+                if (';' in predicted_vanilla):
+                    predicted_vanilla = predicted_vanilla.replace(';', ';\n')
+                elif (')' in predicted_vanilla):
+                    predicted_vanilla = predicted_vanilla.replace(')', ')\n')
+                elif ('{' in predicted_vanilla):
+                    predicted_vanilla = predicted_vanilla.replace('{', '{\n')
+                elif ('}' in predicted_vanilla):
+                    predicted_vanilla = predicted_vanilla.replace('}', '}\n')
+                else:
+                    predicted_vanilla = predicted_vanilla.replace('>', '>\n')
+                    print('Predicted Output: ', predicted_vanilla)
+                b = time.perf_counter()
+                # print("Generated output: ", predicted )
+
+                print('vanilla  - time to generate & display output:  ',
+                    round(b-a), " seconds\n")
+                return render(request, 'result_vanilla.html', {'ques': text,'result_vanilla': predicted_vanilla})
+            except ValueError:
+                return 'result_vanilla.html'
+            
+        elif 'codet5' in request.POST:
+            try:
+                text = request.POST.get('description')
+                print('t5 ', text)
+                a = time.perf_counter()
+
+                model = CodeT5()
+                # print(tokenizer([text]))
+                torch.save(model.state_dict(
+                ), '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth')
+                # input_tensor = torch.tensor(description)
+                # model.load_state_dict(torch.load('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth'))
+                # print(model.eval())
+                tokenizer = RobertaTokenizer.from_pretrained('Salesforce/codet5-small')
+                input_ids = tokenizer(text, return_tensors='pt').input_ids
+                attention_mask = tokenizer(text, return_tensors='pt').attention_mask
+                model_t5 = T5ForConditionalGeneration.from_pretrained(
+                    '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/')
+                # print(model_t5.eval())
+                output_t5 = model_t5.generate(input_ids, max_length=500)
+                predicted_t5 = tokenizer.decode(output_t5[0], skip_special_tokens=True)
+
+                b = time.perf_counter()
+
+                print('t5 - time to generate & display output:  ', round(b-a), " sec\n")
 
 
-        
-        
-        if (';' in predicted_vanilla):
-            predicted_vanilla = predicted_vanilla.replace(';', ';\n') 
-        elif (')' in predicted_vanilla):
-            predicted_vanilla = predicted_vanilla.replace(')', ')\n')
-        elif ('{' in predicted_vanilla):
-            predicted_vanilla = predicted_vanilla.replace('{', '{\n')
-        elif ('}' in predicted_vanilla):
-            predicted_vanilla = predicted_vanilla.replace('}', '}\n')
-        else:
-        
+                return render(request, 'result_t5.html', {'ques': text, 'result_t5': predicted_t5})
+            except ValueError:
+                return 'result_t5.html'
+# def result_t5(request):
 
-        # c=time.perf_counter()
-            print('Predicted Output: ',predicted_vanilla)
-        # print(result)
-        # print('time to load model:  ',round(b-a)," sec")
-        # print( 'time to generate & display output:  ', round(c-b)," sec\n")
-        # return JsonResponse({'ques':description,'result': output})
-        return render(request, 'result.html', {'ques':pseudocode,'result_t5': predicted_t5, 'result_vanilla':predicted_vanilla})
-    # return JsonResponse({})
+#     # print('--------------', tf.__version__)
+#     if request.method == "POST":
+#         text = request.POST.get('description')
+#         print('t5 ', text)
+#         a = time.perf_counter()
 
+#         model = CodeT5()
+#         # print(tokenizer([text]))
+#         torch.save(model.state_dict(
+#         ), '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth')
+#         # input_tensor = torch.tensor(description)
+#         # model.load_state_dict(torch.load('/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/model_weights.pth'))
+#         # print(model.eval())
+#         tokenizer = RobertaTokenizer.from_pretrained('Salesforce/codet5-small')
+#         input_ids = tokenizer(text, return_tensors='pt').input_ids
+#         attention_mask = tokenizer(text, return_tensors='pt').attention_mask
+#         model_t5 = T5ForConditionalGeneration.from_pretrained(
+#             '/home/rakshya/Documents/MajorProjectFrontend/CodeT5Model/')
+#         # print(model_t5.eval())
+#         output_t5 = model_t5.generate(input_ids, max_length=500)
+#         predicted_t5 = tokenizer.decode(output_t5[0], skip_special_tokens=True)
 
+#         b = time.perf_counter()
 
+#         print('t5 - time to generate & display output:  ', round(b-a), " sec\n")
 
-# def api_expose(request):
-    # if request.method == "POST":
-    #     description = request.POST.get('description')
-    #     print('---------------------',description)
-    #     model = tf.saved_model.load('/home/rakshya/Documents/MajorProjectFrontend/PseudocodeModel/')
+#         # return JsonResponse({'ques':description,'result': output})
+#         return render(request, 'result_t5.html', {'ques': text, 'result_t5': predicted_t5})
 
-
-        # Specify a path
-        # PATH = "CodeT5Model3/pytorch_model.bin"
-        # the_model = TheModelClass(*args, **kwargs)
-        # the_model.load_state_dict(torch.load(PATH))
-        # model = torch.load(PATH)
-        # print("----------------------------------- " ,model)
-        # model.eval()
-        # predicted_output = model(description).numpy()
-
-        # output=predicted_output.decode('utf-8')
-    # return JsonResponse({'ques':"ques",'result': "output1"})
 
 def api_expose(request):
-    print("ques------------------", ques)
-    print("out=------------------",output1)
-    return JsonResponse({'ques':ques,'result': output1})
+    return JsonResponse({'pseudocode': ques, 'result_t5': output_t5, 'result_vanilla': output_vanilla})
